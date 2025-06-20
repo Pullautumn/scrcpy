@@ -89,17 +89,10 @@ void
 sc_mutex_lock(sc_mutex *mutex) {
     // SDL mutexes are recursive, but we don't want to use recursive mutexes
     assert(!sc_mutex_held(mutex));
-    int r = SDL_LockMutex(mutex->mutex);
+    SDL_LockMutex(mutex->mutex);
 #ifndef NDEBUG
-    if (r) {
-        LOGE("Could not lock mutex: %s", SDL_GetError());
-        abort();
-    }
-
     atomic_store_explicit(&mutex->locker, sc_thread_get_id(),
                           memory_order_relaxed);
-#else
-    (void) r;
 #endif
 }
 
@@ -109,15 +102,7 @@ sc_mutex_unlock(sc_mutex *mutex) {
     assert(sc_mutex_held(mutex));
     atomic_store_explicit(&mutex->locker, 0, memory_order_relaxed);
 #endif
-    int r = SDL_UnlockMutex(mutex->mutex);
-#ifndef NDEBUG
-    if (r) {
-        LOGE("Could not lock mutex: %s", SDL_GetError());
-        abort();
-    }
-#else
-    (void) r;
-#endif
+    SDL_UnlockMutex(mutex->mutex);
 }
 
 sc_thread_id
