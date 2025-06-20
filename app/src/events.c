@@ -48,16 +48,16 @@ sc_post_to_main_thread(sc_runnable_fn run, void *userdata) {
     return true;
 }
 
-static int SDLCALL
+static bool SDLCALL
 task_event_filter(void *userdata, SDL_Event *event) {
     (void) userdata;
 
     if (event->type == SC_EVENT_RUN_ON_MAIN_THREAD) {
         // Reject this event type from now on
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 void

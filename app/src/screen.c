@@ -2,7 +2,7 @@
 
 #include <assert.h>
 #include <string.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "events.h"
 #include "icon.h"
@@ -168,7 +168,7 @@ sc_screen_update_content_rect(struct sc_screen *screen) {
 
     int dw;
     int dh;
-    SDL_GL_GetDrawableSize(screen->window, &dw, &dh);
+    SDL_GetWindowSizeInPixels(screen->window, &dw, &dh);
 
     struct sc_size content_size = screen->content_size;
     // The drawable size is the window size * the HiDPI scale
@@ -241,7 +241,7 @@ event_watcher(void *data, SDL_Event *event) {
     assert(screen->video);
 
     if (event->type == SDL_WINDOWEVENT
-            && event->window.event == SDL_WINDOWEVENT_RESIZED) {
+            && event->window.event == SDL_EVENT_WINDOW_RESIZED) {
         // In practice, it seems to always be called from the same thread in
         // that specific case. Anyway, it's just a workaround.
         sc_screen_render(screen, true);
@@ -360,7 +360,7 @@ sc_screen_init(struct sc_screen *screen,
         }
     }
 
-    uint32_t window_flags = SDL_WINDOW_ALLOW_HIGHDPI;
+    uint32_t window_flags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
     if (params->always_on_top) {
         window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
     }
@@ -820,7 +820,7 @@ sc_screen_handle_event(struct sc_screen *screen, const SDL_Event *event) {
         }
         case SDL_WINDOWEVENT:
             if (!screen->video
-                    && event->window.event == SDL_WINDOWEVENT_EXPOSED) {
+                    && event->window.event == SDL_EVENT_WINDOW_EXPOSED) {
                 sc_screen_render_novideo(screen);
             }
 
@@ -831,19 +831,19 @@ sc_screen_handle_event(struct sc_screen *screen, const SDL_Event *event) {
                 return true;
             }
             switch (event->window.event) {
-                case SDL_WINDOWEVENT_EXPOSED:
+                case SDL_EVENT_WINDOW_EXPOSED :
                     sc_screen_render(screen, true);
                     break;
-                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
                     sc_screen_render(screen, true);
                     break;
-                case SDL_WINDOWEVENT_MAXIMIZED:
+                case SDL_EVENT_WINDOW_MAXIMIZED :
                     screen->maximized = true;
                     break;
-                case SDL_WINDOWEVENT_MINIMIZED:
+                case SDL_EVENT_WINDOW_MINIMIZED :
                     screen->minimized = true;
                     break;
-                case SDL_WINDOWEVENT_RESTORED:
+                case SDL_EVENT_WINDOW_RESTORED :
                     if (screen->fullscreen) {
                         // On Windows, in maximized+fullscreen, disabling
                         // fullscreen mode unexpectedly triggers the "restored"
@@ -939,7 +939,7 @@ sc_screen_hidpi_scale_coords(struct sc_screen *screen, int32_t *x, int32_t *y) {
     // take the HiDPI scaling (dw/ww and dh/wh) into account
     int ww, wh, dw, dh;
     SDL_GetWindowSize(screen->window, &ww, &wh);
-    SDL_GL_GetDrawableSize(screen->window, &dw, &dh);
+    SDL_GetWindowSizeInPixels(screen->window, &dw, &dh);
 
     // scale for HiDPI (64 bits for intermediate multiplications)
     *x = (int64_t) *x * dw / ww;

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <libavutil/frame.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "coords.h"
 #include "opengl.h"

@@ -5,7 +5,7 @@
 /** Downcast frame_sink to sc_audio_player */
 #define DOWNCAST(SINK) container_of(SINK, struct sc_audio_player, frame_sink)
 
-#define SC_SDL_SAMPLE_FMT AUDIO_F32
+#define SC_SDL_SAMPLE_FMT SDL_AUDIO_F32LE
 
 static void SDLCALL
 sc_audio_player_sdl_callback(void *userdata, uint8_t *stream, int len_int) {
@@ -86,7 +86,7 @@ sc_audio_player_frame_sink_open(struct sc_frame_sink *sink,
         (void) ok; // We don't care if it worked, at least we tried
     }
 
-    SDL_PauseAudioDevice(ap->device, 0);
+    SDL_ResumeAudioDevice(ap->device);
 
     return true;
 }
@@ -96,7 +96,7 @@ sc_audio_player_frame_sink_close(struct sc_frame_sink *sink) {
     struct sc_audio_player *ap = DOWNCAST(sink);
 
     assert(ap->device);
-    SDL_PauseAudioDevice(ap->device, 1);
+    SDL_PauseAudioDevice(ap->device);
     SDL_CloseAudioDevice(ap->device);
 
     sc_audio_regulator_destroy(&ap->audioreg);

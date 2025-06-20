@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #ifdef _WIN32
 // not needed here, but winsock2.h must never be included AFTER windows.h
@@ -94,7 +94,7 @@ struct scrcpy {
 #ifdef _WIN32
 static BOOL WINAPI windows_ctrl_handler(DWORD ctrl_type) {
     if (ctrl_type == CTRL_C_EVENT) {
-        sc_push_event(SDL_QUIT);
+        sc_push_event(SDL_EVENT_QUIT);
         return TRUE;
     }
     return FALSE;
@@ -198,7 +198,7 @@ event_loop(struct scrcpy *s, bool has_screen) {
             case SC_EVENT_TIME_LIMIT_REACHED:
                 LOGI("Time limit reached");
                 return SCRCPY_EXIT_SUCCESS;
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT :
                 LOGD("User requested to quit");
                 return SCRCPY_EXIT_SUCCESS;
             case SC_EVENT_RUN_ON_MAIN_THREAD: {
@@ -238,7 +238,7 @@ await_for_server(bool *connected) {
     SDL_Event event;
     while (SDL_WaitEvent(&event)) {
         switch (event.type) {
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT :
                 if (connected) {
                     *connected = false;
                 }
@@ -368,10 +368,11 @@ init_sdl_gamepads(void) {
     // connected
     int num_joysticks = SDL_NumJoysticks();
     for (int i = 0; i < num_joysticks; ++i) {
-        if (SDL_IsGameController(i)) {
+        if (/* FIXME MIGRATION: check for valid instance */
+            SDL_IsGamepad(GetJoystickInstanceFromIndex(i))) {
             SDL_Event event;
-            event.cdevice.type = SDL_CONTROLLERDEVICEADDED;
-            event.cdevice.which = i;
+            event.gdevice.type = SDL_EVENT_GAMEPAD_ADDED;
+            event.gdevice.which = i;
             SDL_PushEvent(&event);
         }
     }
@@ -532,7 +533,7 @@ scrcpy(struct scrcpy_options *options) {
     }
 
     if (options->gamepad_input_mode != SC_GAMEPAD_INPUT_MODE_DISABLED) {
-        if (SDL_Init(SDL_INIT_GAMECONTROLLER)) {
+        if (SDL_Init(SDL_INIT_GAMEPAD)) {
             LOGE("Could not initialize SDL gamepad: %s", SDL_GetError());
             goto end;
         }

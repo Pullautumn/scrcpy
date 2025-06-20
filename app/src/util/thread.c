@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL2/SDL_thread.h>
+#include <SDL3/SDL_thread.h>
 
 #include "util/log.h"
 
@@ -51,8 +51,8 @@ to_sdl_thread_priority(enum sc_thread_priority priority) {
 bool
 sc_thread_set_priority(enum sc_thread_priority priority) {
     SDL_ThreadPriority sdl_priority = to_sdl_thread_priority(priority);
-    int r = SDL_SetThreadPriority(sdl_priority);
-    if (r) {
+    bool ok = SDL_SetCurrentThreadPriority(sdl_priority);
+    if (!ok) {
         LOGD("Could not set thread priority: %s", SDL_GetError());
         return false;
     }
@@ -67,7 +67,7 @@ sc_thread_join(sc_thread *thread, int *status) {
 
 bool
 sc_mutex_init(sc_mutex *mutex) {
-    SDL_mutex *sdl_mutex = SDL_CreateMutex();
+    SDL_Mutex *sdl_mutex = SDL_CreateMutex();
     if (!sdl_mutex) {
         LOG_OOM();
         return false;
@@ -107,7 +107,7 @@ sc_mutex_unlock(sc_mutex *mutex) {
 
 sc_thread_id
 sc_thread_get_id(void) {
-    return SDL_ThreadID();
+    return SDL_GetCurrentThreadID();
 }
 
 #ifndef NDEBUG
@@ -121,7 +121,7 @@ sc_mutex_held(struct sc_mutex *mutex) {
 
 bool
 sc_cond_init(sc_cond *cond) {
-    SDL_cond *sdl_cond = SDL_CreateCond();
+    SDL_Condition *sdl_cond = SDL_CreateCondition();
     if (!sdl_cond) {
         LOG_OOM();
         return false;
@@ -133,12 +133,12 @@ sc_cond_init(sc_cond *cond) {
 
 void
 sc_cond_destroy(sc_cond *cond) {
-    SDL_DestroyCond(cond->cond);
+    SDL_DestroyCondition(cond->cond);
 }
 
 void
 sc_cond_wait(sc_cond *cond, sc_mutex *mutex) {
-    int r = SDL_CondWait(cond->cond, mutex->mutex);
+    int r = SDL_WaitCondition(cond->cond, mutex->mutex);
 #ifndef NDEBUG
     if (r) {
         LOGE("Could not wait on condition: %s", SDL_GetError());
@@ -162,7 +162,7 @@ sc_cond_timedwait(sc_cond *cond, sc_mutex *mutex, sc_tick deadline) {
     // Round up to the next millisecond to guarantee that the deadline is
     // reached when returning due to timeout
     uint32_t ms = SC_TICK_TO_MS(deadline - now + SC_TICK_FROM_MS(1) - 1);
-    int r = SDL_CondWaitTimeout(cond->cond, mutex->mutex, ms);
+    int r = SDL_WaitConditionTimeout(cond->cond, mutex->mutex, ms);
 #ifndef NDEBUG
     if (r < 0) {
         LOGE("Could not wait on condition with timeout: %s", SDL_GetError());
@@ -180,7 +180,7 @@ sc_cond_timedwait(sc_cond *cond, sc_mutex *mutex, sc_tick deadline) {
 
 void
 sc_cond_signal(sc_cond *cond) {
-    int r = SDL_CondSignal(cond->cond);
+    int r = SDL_SignalCondition(cond->cond);
 #ifndef NDEBUG
     if (r) {
         LOGE("Could not signal a condition: %s", SDL_GetError());
@@ -193,7 +193,7 @@ sc_cond_signal(sc_cond *cond) {
 
 void
 sc_cond_broadcast(sc_cond *cond) {
-    int r = SDL_CondBroadcast(cond->cond);
+    int r = SDL_BroadcastCondition(cond->cond);
 #ifndef NDEBUG
     if (r) {
         LOGE("Could not broadcast a condition: %s", SDL_GetError());

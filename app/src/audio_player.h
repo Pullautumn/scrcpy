@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#include <SDL2/SDL_audio.h>
+#include <SDL3/SDL_audio.h>
 
 #include "audio_regulator.h"
 #include "trait/frame_sink.h"

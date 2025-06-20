@@ -12,8 +12,7 @@ sc_display_init_novideo_icon(struct sc_display *display,
                              SDL_Surface *icon_novideo) {
     assert(icon_novideo);
 
-    if (SDL_RenderSetLogicalSize(display->renderer,
-                                 icon_novideo->w, icon_novideo->h)) {
+    if (SDL_SetRenderLogicalPresentation(display->renderer, icon_novideo->w, icon_novideo->h, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
         LOGW("Could not set renderer logical size: %s", SDL_GetError());
         // don't fail
     }
@@ -32,7 +31,7 @@ bool
 sc_display_init(struct sc_display *display, SDL_Window *window,
                 SDL_Surface *icon_novideo, bool mipmaps) {
     display->renderer =
-        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
     if (!display->renderer) {
         LOGE("Could not create renderer: %s", SDL_GetError());
         return false;
@@ -101,7 +100,7 @@ sc_display_init(struct sc_display *display, SDL_Window *window,
         bool ok = sc_display_init_novideo_icon(display, icon_novideo);
         if (!ok) {
 #ifdef SC_DISPLAY_FORCE_OPENGL_CORE_PROFILE
-            SDL_GL_DeleteContext(display->gl_context);
+            SDL_GL_DestroyContext(display->gl_context);
 #endif
             SDL_DestroyRenderer(display->renderer);
             return false;
@@ -117,7 +116,7 @@ sc_display_destroy(struct sc_display *display) {
         av_frame_free(&display->pending.frame);
     }
 #ifdef SC_DISPLAY_FORCE_OPENGL_CORE_PROFILE
-    SDL_GL_DeleteContext(display->gl_context);
+    SDL_GL_DestroyContext(display->gl_context);
 #endif
     if (display->texture) {
         SDL_DestroyTexture(display->texture);
@@ -307,7 +306,7 @@ sc_display_render(struct sc_display *display, const SDL_Rect *geometry,
     SDL_Texture *texture = display->texture;
 
     if (orientation == SC_ORIENTATION_0) {
-        int ret = SDL_RenderCopy(renderer, texture, NULL, geometry);
+        int ret = SDL_RenderTexture(renderer, texture, NULL, geometry);
         if (ret) {
             LOGE("Could not render texture: %s", SDL_GetError());
             return SC_DISPLAY_RESULT_ERROR;
@@ -328,10 +327,10 @@ sc_display_render(struct sc_display *display, const SDL_Rect *geometry,
             dstrect = geometry;
         }
 
-        SDL_RendererFlip flip = sc_orientation_is_mirror(orientation)
+        SDL_FlipMode flip = sc_orientation_is_mirror(orientation)
                               ? SDL_FLIP_HORIZONTAL : 0;
 
-        int ret = SDL_RenderCopyEx(renderer, texture, NULL, dstrect, angle,
+        int ret = SDL_RenderTextureRotated(renderer, texture, NULL, dstrect, angle,
                                    NULL, flip);
         if (ret) {
             LOGE("Could not render texture: %s", SDL_GetError());
