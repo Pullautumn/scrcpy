@@ -269,13 +269,9 @@ sc_screen_otg_handle_event(struct sc_screen_otg *screen, SDL_Event *event) {
     }
 
     switch (event->type) {
-        case SDL_WINDOWEVENT:
-            switch (event->window.event) {
-                case SDL_EVENT_WINDOW_EXPOSED :
-                    sc_screen_otg_render(screen);
-                    break;
-            }
-            return;
+        case SDL_EVENT_WINDOW_EXPOSED :
+            sc_screen_otg_render(screen);
+            break;
         case SDL_EVENT_KEY_DOWN :
             if (screen->keyboard) {
                 sc_screen_otg_process_key(screen, &event->key);
