@@ -402,39 +402,39 @@ sc_input_manager_process_key(struct sc_input_manager *im,
     if (is_shortcut) {
         enum sc_action action = down ? SC_ACTION_DOWN : SC_ACTION_UP;
         switch (sdl_keycode) {
-            case SDLK_H :
+            case SDLK_H:
                 if (im->kp && !shift && !repeat && !paused) {
                     action_home(im, action);
                 }
                 return;
-            case SDLK_B : // fall-through
+            case SDLK_B: // fall-through
             case SDLK_BACKSPACE:
                 if (im->kp && !shift && !repeat && !paused) {
                     action_back(im, action);
                 }
                 return;
-            case SDLK_S :
+            case SDLK_S:
                 if (im->kp && !shift && !repeat && !paused) {
                     action_app_switch(im, action);
                 }
                 return;
-            case SDLK_M :
+            case SDLK_M:
                 if (im->kp && !shift && !repeat && !paused) {
                     action_menu(im, action);
                 }
                 return;
-            case SDLK_P :
+            case SDLK_P:
                 if (im->kp && !shift && !repeat && !paused) {
                     action_power(im, action);
                 }
                 return;
-            case SDLK_O :
+            case SDLK_O:
                 if (control && !repeat && down && !paused) {
                     bool on = shift;
                     set_display_power(im, on);
                 }
                 return;
-            case SDLK_Z :
+            case SDLK_Z:
                 if (video && down && !repeat) {
                     sc_screen_set_paused(im->screen, !shift);
                 }
@@ -483,17 +483,17 @@ sc_input_manager_process_key(struct sc_input_manager *im,
                     }
                 }
                 return;
-            case SDLK_C :
+            case SDLK_C:
                 if (im->kp && !shift && !repeat && down && !paused) {
                     get_device_clipboard(im, SC_COPY_KEY_COPY);
                 }
                 return;
-            case SDLK_X :
+            case SDLK_X:
                 if (im->kp && !shift && !repeat && down && !paused) {
                     get_device_clipboard(im, SC_COPY_KEY_CUT);
                 }
                 return;
-            case SDLK_V :
+            case SDLK_V:
                 if (im->kp && !repeat && down && !paused) {
                     if (shift || im->legacy_paste) {
                         // inject the text as input events
@@ -505,27 +505,27 @@ sc_input_manager_process_key(struct sc_input_manager *im,
                     }
                 }
                 return;
-            case SDLK_F :
+            case SDLK_F:
                 if (video && !shift && !repeat && down) {
                     sc_screen_toggle_fullscreen(im->screen);
                 }
                 return;
-            case SDLK_W :
+            case SDLK_W:
                 if (video && !shift && !repeat && down) {
                     sc_screen_resize_to_fit(im->screen);
                 }
                 return;
-            case SDLK_G :
+            case SDLK_G:
                 if (video && !shift && !repeat && down) {
                     sc_screen_resize_to_pixel_perfect(im->screen);
                 }
                 return;
-            case SDLK_I :
+            case SDLK_I:
                 if (video && !shift && !repeat && down) {
                     switch_fps_counter_state(im);
                 }
                 return;
-            case SDLK_N :
+            case SDLK_N:
                 if (control && !repeat && down && !paused) {
                     if (shift) {
                         collapse_panels(im);
@@ -536,7 +536,7 @@ sc_input_manager_process_key(struct sc_input_manager *im,
                     }
                 }
                 return;
-            case SDLK_R :
+            case SDLK_R:
                 if (control && !repeat && down && !paused) {
                     if (shift) {
                         reset_video(im);
@@ -545,7 +545,7 @@ sc_input_manager_process_key(struct sc_input_manager *im,
                     }
                 }
                 return;
-            case SDLK_K :
+            case SDLK_K:
                 if (control && !shift && !repeat && down && !paused
                         && im->kp && im->kp->hid) {
                     // Only if the current keyboard is hid
@@ -1018,66 +1018,66 @@ sc_input_manager_handle_event(struct sc_input_manager *im,
     bool control = im->controller;
     bool paused = im->screen->paused;
     switch (event->type) {
-        case SDL_EVENT_TEXT_INPUT :
+        case SDL_EVENT_TEXT_INPUT:
             if (!im->kp || paused) {
                 break;
             }
             sc_input_manager_process_text_input(im, &event->text);
             break;
-        case SDL_EVENT_KEY_DOWN :
-        case SDL_EVENT_KEY_UP :
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
             // some key events do not interact with the device, so process the
             // event even if control is disabled
             sc_input_manager_process_key(im, &event->key);
             break;
-        case SDL_EVENT_MOUSE_MOTION :
+        case SDL_EVENT_MOUSE_MOTION:
             if (!im->mp || paused) {
                 break;
             }
             sc_input_manager_process_mouse_motion(im, &event->motion);
             break;
-        case SDL_EVENT_MOUSE_WHEEL :
+        case SDL_EVENT_MOUSE_WHEEL:
             if (!im->mp || paused) {
                 break;
             }
             sc_input_manager_process_mouse_wheel(im, &event->wheel);
             break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN :
-        case SDL_EVENT_MOUSE_BUTTON_UP :
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
             // some mouse events do not interact with the device, so process
             // the event even if control is disabled
             sc_input_manager_process_mouse_button(im, &event->button);
             break;
-        case SDL_EVENT_FINGER_MOTION :
-        case SDL_EVENT_FINGER_DOWN :
-        case SDL_EVENT_FINGER_UP :
+        case SDL_EVENT_FINGER_MOTION:
+        case SDL_EVENT_FINGER_DOWN:
+        case SDL_EVENT_FINGER_UP:
             if (!im->mp || paused) {
                 break;
             }
             sc_input_manager_process_touch(im, &event->tfinger);
             break;
-        case SDL_EVENT_GAMEPAD_ADDED :
-        case SDL_EVENT_GAMEPAD_REMOVED :
+        case SDL_EVENT_GAMEPAD_ADDED:
+        case SDL_EVENT_GAMEPAD_REMOVED:
             // Handle device added or removed even if paused
             if (!im->gp) {
                 break;
             }
             sc_input_manager_process_gamepad_device(im, &event->gdevice);
             break;
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION :
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
             if (!im->gp || paused) {
                 break;
             }
             sc_input_manager_process_gamepad_axis(im, &event->gaxis);
             break;
-        case SDL_EVENT_GAMEPAD_BUTTON_DOWN :
-        case SDL_EVENT_GAMEPAD_BUTTON_UP :
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
             if (!im->gp || paused) {
                 break;
             }
             sc_input_manager_process_gamepad_button(im, &event->gbutton);
             break;
-        case SDL_EVENT_DROP_FILE : {
+        case SDL_EVENT_DROP_FILE: {
             if (!control) {
                 break;
             }

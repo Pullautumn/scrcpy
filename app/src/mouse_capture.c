@@ -23,7 +23,7 @@ sc_mouse_capture_handle_event(struct sc_mouse_capture *mc,
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             sc_mouse_capture_set_active(mc, false);
             return true;
-        case SDL_EVENT_KEY_DOWN : {
+        case SDL_EVENT_KEY_DOWN: {
             SDL_Keycode key = event->key.key;
             if (sc_mouse_capture_is_capture_key(mc, key)) {
                 if (!mc->mouse_capture_key_pressed) {
@@ -38,7 +38,7 @@ sc_mouse_capture_handle_event(struct sc_mouse_capture *mc,
             }
             break;
         }
-        case SDL_EVENT_KEY_UP : {
+        case SDL_EVENT_KEY_UP: {
             SDL_Keycode key = event->key.key;
             SDL_Keycode cap = mc->mouse_capture_key_pressed;
             mc->mouse_capture_key_pressed = 0;
@@ -53,24 +53,24 @@ sc_mouse_capture_handle_event(struct sc_mouse_capture *mc,
             }
             break;
         }
-        case SDL_EVENT_MOUSE_WHEEL :
-        case SDL_EVENT_MOUSE_MOTION :
-        case SDL_EVENT_MOUSE_BUTTON_DOWN :
+        case SDL_EVENT_MOUSE_WHEEL:
+        case SDL_EVENT_MOUSE_MOTION:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
             if (!sc_mouse_capture_is_active(mc)) {
                 // The mouse will be captured on SDL_MOUSEBUTTONUP, so consume
                 // the event
                 return true;
             }
             break;
-        case SDL_EVENT_MOUSE_BUTTON_UP :
+        case SDL_EVENT_MOUSE_BUTTON_UP:
             if (!sc_mouse_capture_is_active(mc)) {
                 sc_mouse_capture_set_active(mc, true);
                 return true;
             }
             break;
-        case SDL_EVENT_FINGER_MOTION :
-        case SDL_EVENT_FINGER_DOWN :
-        case SDL_EVENT_FINGER_UP :
+        case SDL_EVENT_FINGER_MOTION:
+        case SDL_EVENT_FINGER_DOWN:
+        case SDL_EVENT_FINGER_UP:
             // Touch events are not compatible with relative mode
             // (coordinates are not relative), so consume the event
             return true;

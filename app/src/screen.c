@@ -833,19 +833,19 @@ sc_screen_handle_event(struct sc_screen *screen, const SDL_Event *event) {
                 return true;
             }
             switch (event->window.event) {
-                case SDL_EVENT_WINDOW_EXPOSED :
+                case SDL_EVENT_WINDOW_EXPOSED:
                     sc_screen_render(screen, true);
                     break;
-                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
                     sc_screen_render(screen, true);
                     break;
-                case SDL_EVENT_WINDOW_MAXIMIZED :
+                case SDL_EVENT_WINDOW_MAXIMIZED:
                     screen->maximized = true;
                     break;
-                case SDL_EVENT_WINDOW_MINIMIZED :
+                case SDL_EVENT_WINDOW_MINIMIZED:
                     screen->minimized = true;
                     break;
-                case SDL_EVENT_WINDOW_RESTORED :
+                case SDL_EVENT_WINDOW_RESTORED:
                     if (screen->fullscreen) {
                         // On Windows, in maximized+fullscreen, disabling
                         // fullscreen mode unexpectedly triggers the "restored"

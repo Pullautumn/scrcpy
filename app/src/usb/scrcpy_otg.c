@@ -45,7 +45,7 @@ event_loop(struct scrcpy_otg *s) {
             case SC_EVENT_AOA_OPEN_ERROR:
                 LOGE("AOA open error");
                 return SCRCPY_EXIT_FAILURE;
-            case SDL_EVENT_QUIT :
+            case SDL_EVENT_QUIT:
                 LOGD("User requested to quit");
                 return SCRCPY_EXIT_SUCCESS;
             default:

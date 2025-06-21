@@ -269,53 +269,53 @@ sc_screen_otg_handle_event(struct sc_screen_otg *screen, SDL_Event *event) {
     }
 
     switch (event->type) {
-        case SDL_EVENT_WINDOW_EXPOSED :
+        case SDL_EVENT_WINDOW_EXPOSED:
             sc_screen_otg_render(screen);
             break;
-        case SDL_EVENT_KEY_DOWN :
+        case SDL_EVENT_KEY_DOWN:
             if (screen->keyboard) {
                 sc_screen_otg_process_key(screen, &event->key);
             }
             break;
-        case SDL_EVENT_KEY_UP :
+        case SDL_EVENT_KEY_UP:
             if (screen->keyboard) {
                 sc_screen_otg_process_key(screen, &event->key);
             }
             break;
-        case SDL_EVENT_MOUSE_MOTION :
+        case SDL_EVENT_MOUSE_MOTION:
             if (screen->mouse) {
                 sc_screen_otg_process_mouse_motion(screen, &event->motion);
             }
             break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN :
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
             if (screen->mouse) {
                 sc_screen_otg_process_mouse_button(screen, &event->button);
             }
             break;
-        case SDL_EVENT_MOUSE_BUTTON_UP :
+        case SDL_EVENT_MOUSE_BUTTON_UP:
             if (screen->mouse) {
                 sc_screen_otg_process_mouse_button(screen, &event->button);
             }
             break;
-        case SDL_EVENT_MOUSE_WHEEL :
+        case SDL_EVENT_MOUSE_WHEEL:
             if (screen->mouse) {
                 sc_screen_otg_process_mouse_wheel(screen, &event->wheel);
             }
             break;
-        case SDL_EVENT_GAMEPAD_ADDED :
-        case SDL_EVENT_GAMEPAD_REMOVED :
+        case SDL_EVENT_GAMEPAD_ADDED:
+        case SDL_EVENT_GAMEPAD_REMOVED:
             // Handle device added or removed even if paused
             if (screen->gamepad) {
                 sc_screen_otg_process_gamepad_device(screen, &event->gdevice);
             }
             break;
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION :
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
             if (screen->gamepad) {
                 sc_screen_otg_process_gamepad_axis(screen, &event->gaxis);
             }
             break;
-        case SDL_EVENT_GAMEPAD_BUTTON_DOWN :
-        case SDL_EVENT_GAMEPAD_BUTTON_UP :
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
             if (screen->gamepad) {
                 sc_screen_otg_process_gamepad_button(screen, &event->gbutton);
             }
