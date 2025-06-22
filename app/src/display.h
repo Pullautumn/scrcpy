@@ -26,6 +26,7 @@ struct sc_display {
 #endif
 
     bool mipmaps;
+    uint32_t texture_id; // only set if mipmaps is enabled
 
     struct {
 #define SC_DISPLAY_PENDING_FLAG_SIZE 1

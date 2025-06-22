@@ -151,10 +151,11 @@ sc_display_create_texture(struct sc_display *display,
             LOGE("Could not get texture id: %s", SDL_GetError());
             SDL_DestroyTexture(texture);
             return NULL;
-
         }
 
-        gl->BindTexture(GL_TEXTURE_2D, texture_id);
+        assert(!(texture_id & ~0xFFFFFFFF)); // fits in uint32_t
+        display->texture_id = texture_id;
+        gl->BindTexture(GL_TEXTURE_2D, display->texture_id);
 
         // Enable trilinear filtering for downscaling
         gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -281,9 +282,12 @@ sc_display_update_texture_internal(struct sc_display *display,
     }
 
     if (display->mipmaps) {
-        SDL_GL_BindTexture(display->texture, NULL, NULL);
+        assert(display->texture_id);
+        struct sc_opengl *gl = &display->gl;
+
+        gl->BindTexture(GL_TEXTURE_2D, display->texture_id);
         display->gl.GenerateMipmap(GL_TEXTURE_2D);
-        SDL_GL_UnbindTexture(display->texture);
+        gl->BindTexture(GL_TEXTURE_2D, 0);
     }
 
     return true;
