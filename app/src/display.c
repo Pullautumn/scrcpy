@@ -325,7 +325,9 @@ sc_display_render(struct sc_display *display, const SDL_Rect *geometry,
     SDL_Texture *texture = display->texture;
 
     if (orientation == SC_ORIENTATION_0) {
-        bool ok = SDL_RenderTexture(renderer, texture, NULL, geometry);
+        SDL_FRect frect;
+        SDL_RectToFRect(geometry, &frect);
+        bool ok = SDL_RenderTexture(renderer, texture, NULL, &frect);
         if (!ok) {
             LOGE("Could not render texture: %s", SDL_GetError());
             return SC_DISPLAY_RESULT_ERROR;
@@ -334,23 +336,21 @@ sc_display_render(struct sc_display *display, const SDL_Rect *geometry,
         unsigned cw_rotation = sc_orientation_get_rotation(orientation);
         double angle = 90 * cw_rotation;
 
-        const SDL_Rect *dstrect = NULL;
-        SDL_Rect rect;
+        SDL_FRect frect;
         if (sc_orientation_is_swap(orientation)) {
-            rect.x = geometry->x + (geometry->w - geometry->h) / 2;
-            rect.y = geometry->y + (geometry->h - geometry->w) / 2;
-            rect.w = geometry->h;
-            rect.h = geometry->w;
-            dstrect = &rect;
+            frect.x = geometry->x + (geometry->w - geometry->h) / 2.f;
+            frect.y = geometry->y + (geometry->h - geometry->w) / 2.f;
+            frect.w = geometry->h;
+            frect.h = geometry->w;
         } else {
-            dstrect = geometry;
+            SDL_RectToFRect(geometry, &frect);
         }
 
         SDL_FlipMode flip = sc_orientation_is_mirror(orientation)
                               ? SDL_FLIP_HORIZONTAL : 0;
 
-        bool ok = SDL_RenderTextureRotated(renderer, texture, NULL, dstrect, angle,
-                                   NULL, flip);
+        bool ok = SDL_RenderTextureRotated(renderer, texture, NULL, &frect,
+                                           angle, NULL, flip);
         if (!ok) {
             LOGE("Could not render texture: %s", SDL_GetError());
             return SC_DISPLAY_RESULT_ERROR;
